@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  hot-updater-server:
+    build: .
+    container_name: hot-updater-server
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      HOT_UPDATER_SUPABASE_URL: ${HOT_UPDATER_SUPABASE_URL}
+      HOT_UPDATER_SUPABASE_ANON_KEY: ${HOT_UPDATER_SUPABASE_ANON_KEY}
+      HOT_UPDATER_SUPABASE_BUCKET_NAME: ${HOT_UPDATER_SUPABASE_BUCKET_NAME}
+      PORT: 3000
+      SERVER_BASE_URL: ${SERVER_BASE_URL:-http://localhost:3000}
+      HOT_UPDATER_API_KEY: ${HOT_UPDATER_API_KEY}
+      DATABASE_URL: "file:/app/data/hot_updater.db"
+    volumes:
+      - hot_updater_data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  hot_updater_data:
+    driver: local
