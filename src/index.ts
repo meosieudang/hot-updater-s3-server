@@ -3,8 +3,8 @@ config({ path: ".env" });
 
 import express from "express";
 import cors from "cors";
-import { hotUpdater } from "./hotUpdater";
-import { apiKeyAuth, requestLogger } from "./middleware";
+import { hotUpdater } from "./hotUpdater.js";
+import { apiKeyAuth, requestLogger } from "./middleware.js";
 
 // Validate required env vars at server startup
 const requiredEnvVars = [
@@ -63,7 +63,7 @@ app.all("/hot-updater/*", apiKeyAuth, async (req, res) => {
       }
     }
 
-    let body: BodyInit | null = null;
+    let body: any | null = null;
     if (req.method !== "GET" && req.method !== "HEAD") {
       body = JSON.stringify(req.body);
     }
@@ -76,7 +76,7 @@ app.all("/hot-updater/*", apiKeyAuth, async (req, res) => {
     const webResponse = await hotUpdater.handler(webRequest);
 
     res.status(webResponse.status);
-    webResponse.headers.forEach((value, key) => res.setHeader(key, value));
+    webResponse.headers.forEach((value: string, key: string) => res.setHeader(key, value));
     res.send(await webResponse.text());
   } catch (error) {
     console.error("[HotUpdater] Handler error:", error);

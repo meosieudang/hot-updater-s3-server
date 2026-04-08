@@ -2,8 +2,9 @@ import { config } from "dotenv";
 config({ path: ".env" });
 import { s3Storage } from "@hot-updater/aws";
 import { createHotUpdater } from "@hot-updater/server";
+//@ts-ignore
 import { prismaAdapter } from "@hot-updater/server/adapters/prisma";
-import { prisma } from "./prisma";
+import { prisma } from "./prisma.js";
 
 export const hotUpdater = createHotUpdater({
   database: prismaAdapter({ prisma, provider: "sqlite" }),
