@@ -1,18 +1,20 @@
 import { config } from "dotenv";
 config({ path: ".env" });
-
+import { s3Storage } from "@hot-updater/aws";
 import { createHotUpdater } from "@hot-updater/server";
 import { prismaAdapter } from "@hot-updater/server/adapters/prisma";
-import { supabaseStorage } from "@hot-updater/supabase";
 import { prisma } from "./prisma";
 
 export const hotUpdater = createHotUpdater({
   database: prismaAdapter({ prisma, provider: "sqlite" }),
   storages: [
-    supabaseStorage({
-      supabaseUrl: process.env.HOT_UPDATER_SUPABASE_URL!,
-      supabaseAnonKey: process.env.HOT_UPDATER_SUPABASE_ANON_KEY!,
-      bucketName: process.env.HOT_UPDATER_SUPABASE_BUCKET_NAME!,
+    s3Storage({
+      region: process.env.AWS_REGION!,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+      bucketName: process.env.AWS_S3_BUNDLES_BUCKET!,
     }),
   ],
   basePath: "/hot-updater",

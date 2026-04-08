@@ -8,9 +8,10 @@ import { apiKeyAuth, requestLogger } from "./middleware";
 
 // Validate required env vars at server startup
 const requiredEnvVars = [
-  "HOT_UPDATER_SUPABASE_URL",
-  "HOT_UPDATER_SUPABASE_ANON_KEY",
-  "HOT_UPDATER_SUPABASE_BUCKET_NAME",
+  "AWS_REGION",
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "AWS_S3_BUNDLES_BUCKET",
   "HOT_UPDATER_API_KEY",
 ];
 for (const key of requiredEnvVars) {
@@ -34,7 +35,7 @@ app.use(
     origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
-  })
+  }),
 );
 
 app.use(express.json({ limit: "10mb" }));
@@ -45,7 +46,7 @@ app.get("/health", (_req, res) => {
     status: "ok",
     service: "hot-updater-server",
     timestamp: new Date().toISOString(),
-    storage: "Supabase",
+    storage: "S3",
     database: "Prisma + SQLite",
   });
 });
@@ -67,7 +68,11 @@ app.all("/hot-updater/*", apiKeyAuth, async (req, res) => {
       body = JSON.stringify(req.body);
     }
 
-    const webRequest = new Request(url.toString(), { method: req.method, headers, body });
+    const webRequest = new Request(url.toString(), {
+      method: req.method,
+      headers,
+      body,
+    });
     const webResponse = await hotUpdater.handler(webRequest);
 
     res.status(webResponse.status);
@@ -91,7 +96,7 @@ const server = app.listen(PORT, () => {
   console.log(`  URL:      ${baseUrl}`);
   console.log(`  API:      ${baseUrl}/hot-updater`);
   console.log(`  Health:   ${baseUrl}/health`);
-  console.log(`  Storage:  Supabase (${process.env.HOT_UPDATER_SUPABASE_BUCKET_NAME})`);
+  console.log(`  Storage:  S3 (${process.env.AWS_S3_BUNDLES_BUCKET})`);
   console.log(`  Database: Prisma SQLite`);
   console.log("─".repeat(60));
 });

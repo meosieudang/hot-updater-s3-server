@@ -22,7 +22,7 @@ export default defineConfig({
       ? `${process.env.SERVER_BASE_URL}/hot-updater`
       : "http://localhost:3000/hot-updater",
     headers: {
-      "x-api-key": process.env.HOT_UPDATER_API_KEY ?? "",
+      Authorization: process.env.HOT_UPDATER_API_KEY ?? "",
     },
   }),
 });

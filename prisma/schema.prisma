@@ -24,7 +24,6 @@ model Bundle {
   metadata            String   @default("{}")
 }
 
-
 // --- BEGIN HOT-UPDATER MODELS (DO NOT EDIT) ---
 model bundles {
   id String @id
@@ -39,11 +38,9 @@ model bundles {
   target_app_version String?
   fingerprint_hash String?
   metadata Json
-  rollout_cohort_count Int @default(1000)
-  target_cohorts Json?
 }
 model private_hot_updater_settings {
   key String @id
-  value String @default("0.29.0")
+  value String @default("0.21.0")
 }
 // --- END HOT-UPDATER MODELS ---
